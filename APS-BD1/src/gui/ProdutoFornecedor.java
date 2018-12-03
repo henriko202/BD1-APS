@@ -40,7 +40,7 @@ public class ProdutoFornecedor extends javax.swing.JFrame {
         fornecedor = new javax.swing.JLabel();
         jcbFornecedor = new javax.swing.JComboBox<>();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {

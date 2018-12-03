@@ -5,12 +5,13 @@
  */
 package gui;
 
-import DAO.CategoriaDAO;
+import dao.CategoriaDAO;
 
+
+import java.text.ParseException;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.sql.SQLException;
-import java.text.ParseException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
@@ -54,7 +55,7 @@ public class Categoria extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         txtId = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         txtNome.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -186,6 +187,16 @@ public class Categoria extends javax.swing.JFrame {
         int dialogResult = JOptionPane.showConfirmDialog(null, "Você tem certeza que deseja salvar esse registro?", "Confirmação?", JOptionPane.YES_NO_OPTION);
 
         if (dialogResult == JOptionPane.YES_OPTION) {
+            if(!txtId.getText().isEmpty()){
+                try {
+                    updateRecord();
+                    clearInputBoxes();
+                    loadRecords();
+                    return;
+                } catch (SQLException | ParseException ex) {
+                    Logger.getLogger(Categoria.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
             try {
                 try {
                     addNew();
@@ -266,7 +277,7 @@ public class Categoria extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void loadRecords() throws SQLException {
-        String sql = "SELECT id, nome FROM Categoria ORDER BY sigla;";
+        String sql = "SELECT id, nome FROM Categoria ORDER BY id;";
         ResultSetTableModel tableModel = new ResultSetTableModel(sql);
         jTable1.setModel(tableModel);
 
@@ -310,6 +321,7 @@ public class Categoria extends javax.swing.JFrame {
         CategoriaDAO dao = new CategoriaDAO();
         model.Categoria cat = new model.Categoria();
         cat.setNome(txtNome.getText());
+        cat.setId(Integer.parseInt(txtId.getText()));
         dao.update(cat);
     }
 

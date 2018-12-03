@@ -5,6 +5,10 @@
  */
 package gui;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 /**
  *
  * @author henri
@@ -213,6 +217,8 @@ public class Venda extends javax.swing.JFrame {
 
         jLabel3.setText("Preço Total");
 
+        txtPreco.setEditable(false);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -257,7 +263,7 @@ public class Venda extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -443,4 +449,13 @@ public class Venda extends javax.swing.JFrame {
     private javax.swing.JButton salvar;
     private javax.swing.JTextField txtPreco;
     // End of variables declaration//GEN-END:variables
+
+public static String sqlDateToString(java.sql.Date date){
+        if(date != null) {
+            java.util.Date utilDate = new java.util.Date(date.getTime());
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+            return dateFormat.format(utilDate);
+        }
+        return null;
+    }
 }

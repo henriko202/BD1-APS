@@ -10,13 +10,23 @@ package model;
  * @author henri
  */
 public class Fornecedor {
+
     private int id;
     private String logradouro;
     private String cidade;
+    private String bairro;
     private String estado;
     private String pais;
     private String nome;
-    private int telefone;
+    private String telefone;
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
 
     public void setLogradouro(String logradouro) {
         this.logradouro = logradouro;
@@ -38,7 +48,7 @@ public class Fornecedor {
         this.nome = nome;
     }
 
-    public void setTelefone(int telefone) {
+    public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
 
@@ -62,7 +72,7 @@ public class Fornecedor {
         return nome;
     }
 
-    public int getTelefone() {
+    public String getTelefone() {
         return telefone;
     }
 

@@ -5,6 +5,16 @@
  */
 package gui;
 
+import dao.ClienteDAO;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.DefaultTableCellRenderer;
+
 /**
  *
  * @author henri
@@ -16,6 +26,11 @@ public class Cliente extends javax.swing.JFrame {
      */
     public Cliente() {
         initComponents();
+        try {
+            loadRecords();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     /**
@@ -48,11 +63,12 @@ public class Cliente extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         salvar = new javax.swing.JButton();
-        limpar = new javax.swing.JButton();
-        buscar = new javax.swing.JButton();
+        remover = new javax.swing.JButton();
         cancelar = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        txtId = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         bairro.setText("Bairro");
 
@@ -120,17 +136,17 @@ public class Cliente extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Nome"
+                "ID", "Nome", "Logradouro", "Bairro", "Cidade", "Estado", "Pais", "Telefone", "Nascimento"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Integer.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -146,11 +162,19 @@ public class Cliente extends javax.swing.JFrame {
             }
         });
 
-        limpar.setText("Limpar");
-
-        buscar.setText("Buscar");
+        remover.setText("Remover");
+        remover.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removerActionPerformed(evt);
+            }
+        });
 
         cancelar.setText("Cancelar");
+        cancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -159,11 +183,9 @@ public class Cliente extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(salvar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(limpar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(buscar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(remover)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(cancelar)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -174,11 +196,19 @@ public class Cliente extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(salvar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(limpar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(buscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(remover, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(cancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
+
+        jLabel1.setText("ID");
+
+        txtId.setEditable(false);
+        txtId.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtIdActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -199,7 +229,8 @@ public class Cliente extends javax.swing.JFrame {
                             .addComponent(pais)
                             .addComponent(nome)
                             .addComponent(telefone)
-                            .addComponent(nasc))
+                            .addComponent(nasc)
+                            .addComponent(jLabel1))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtLogra, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -209,14 +240,18 @@ public class Cliente extends javax.swing.JFrame {
                             .addComponent(txtPais, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtTel, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtNasc, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtNasc, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(logradouro, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(txtLogra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -278,7 +313,31 @@ public class Cliente extends javax.swing.JFrame {
     }//GEN-LAST:event_txtLograActionPerformed
 
     private void salvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salvarActionPerformed
-        // TODO add your handling code here:
+        int dialogResult = JOptionPane.showConfirmDialog(null, "Você tem certeza que deseja salvar esse registro?", "Confirmação?", JOptionPane.YES_NO_OPTION);
+
+        if (dialogResult == JOptionPane.YES_OPTION) {
+            if (!txtId.getText().isEmpty()) {
+                try {
+                    updateRecord();
+                    clearInputBoxes();
+                    loadRecords();
+                    return;
+                } catch (SQLException | ParseException ex) {
+                    Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            try {
+                try {
+                    addNew();
+                } catch (ParseException ex) {
+                    Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                clearInputBoxes();
+                loadRecords();
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
     }//GEN-LAST:event_salvarActionPerformed
 
     private void txtBairroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBairroActionPerformed
@@ -308,6 +367,31 @@ public class Cliente extends javax.swing.JFrame {
     private void txtNascActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNascActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNascActionPerformed
+
+    private void txtIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtIdActionPerformed
+
+    private void removerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removerActionPerformed
+        if (!txtNome.getText().isEmpty()) {
+            int dialogResult = JOptionPane.showConfirmDialog(null, "Você tem certeza que deseja excluir esse registro?", "Confirmação?", JOptionPane.YES_NO_OPTION);
+
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                try {
+                    deleteRecord();
+                    loadRecords();
+                    clearInputBoxes();
+
+                } catch (SQLException ex) {
+                    System.out.println(ex.getMessage());
+                }
+            }
+        }
+    }//GEN-LAST:event_removerActionPerformed
+
+    private void cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarActionPerformed
+        clearInputBoxes();
+    }//GEN-LAST:event_cancelarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -346,28 +430,118 @@ public class Cliente extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel bairro;
-    private javax.swing.JButton buscar;
     private javax.swing.JButton cancelar;
     private javax.swing.JLabel cidade;
     private javax.swing.JLabel estado;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JButton limpar;
     private javax.swing.JLabel logradouro;
     private javax.swing.JLabel nasc;
     private javax.swing.JLabel nome;
     private javax.swing.JLabel pais;
+    private javax.swing.JButton remover;
     private javax.swing.JButton salvar;
     private javax.swing.JLabel telefone;
     private javax.swing.JTextField txtBairro;
     private javax.swing.JTextField txtCidade;
     private javax.swing.JTextField txtEstado;
+    private javax.swing.JTextField txtId;
     private javax.swing.JTextField txtLogra;
     private javax.swing.JTextField txtNasc;
     private javax.swing.JTextField txtNome;
     private javax.swing.JTextField txtPais;
     private javax.swing.JTextField txtTel;
     // End of variables declaration//GEN-END:variables
+
+    private void loadRecords() throws SQLException {
+        String sql = "SELECT id, nome, logradouro, bairro, cidade, estado, pais, telefone, dataNasc FROM Cliente ORDER BY id;";
+        ResultSetTableModel tableModel = new ResultSetTableModel(sql);
+        jTable1.setModel(tableModel);
+
+        jTable1.getSelectionModel().addListSelectionListener((ListSelectionEvent event) -> {
+            try {
+                if (jTable1.getSelectedRow() >= 0) {
+                    Object id = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 0);
+                    Object nome = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 1);
+                    Object logradouro = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 2);
+                    Object bairro = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 3);
+                    Object cidade = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 4);
+                    Object estado = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 5);
+                    Object pais = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 6);
+                    Object telefone = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 7);
+                    Object nascimento = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 8);
+
+                    txtId.setText(id.toString());
+                    txtLogra.setText(logradouro.toString());
+                    txtBairro.setText(bairro.toString());
+                    txtCidade.setText(cidade.toString());
+                    txtEstado.setText(estado.toString());
+                    txtPais.setText(pais.toString());
+                    txtNome.setText(nome.toString());
+                    txtTel.setText(telefone.toString());
+                    txtNasc.setText(nascimento.toString());
+
+                }
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+        });
+
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+        jTable1.getColumnModel().getColumn(0).setCellRenderer(rightRenderer);
+    }
+
+    private void clearInputBoxes() {
+        txtNome.setText("");
+        txtId.setText("");
+        txtLogra.setText("");
+        txtBairro.setText("");
+        txtCidade.setText("");
+        txtEstado.setText("");
+        txtPais.setText("");
+        txtTel.setText("");
+        txtNasc.setText("");
+    }
+
+    private void addNew() throws SQLException, ParseException {
+        ClienteDAO dao = new ClienteDAO();
+        model.Cliente cli = new model.Cliente();
+        cli.setNome(txtNome.getText());
+        cli.setLogradouro(txtLogra.getText());
+        cli.setBairro(txtBairro.getText());
+        cli.setCidade(txtCidade.getText());
+        cli.setEstado(txtEstado.getText());
+        cli.setPais(txtPais.getText());
+        cli.setTelefone(txtTel.getText());
+        cli.setData_nasc(txtNasc.getText());
+
+        //setar endereco tbm
+        dao.insert(cli);
+    }
+
+    private void updateRecord() throws SQLException, ParseException {
+        ClienteDAO dao = new ClienteDAO();
+        model.Cliente cli = new model.Cliente();
+        cli.setId(Integer.parseInt(txtId.getText()));
+        cli.setNome(txtNome.getText());
+        cli.setLogradouro(txtLogra.getText());
+        cli.setBairro(txtBairro.getText());
+        cli.setCidade(txtCidade.getText());
+        cli.setEstado(txtEstado.getText());
+        cli.setPais(txtPais.getText());
+        cli.setTelefone(txtTel.getText());
+        cli.setData_nasc(txtNasc.getText());
+        
+        dao.update(cli);
+    }
+
+    private void deleteRecord() throws SQLException {
+        ClienteDAO dao = new ClienteDAO();
+        dao.remove(Integer.parseInt(txtId.getText()));
+    }
+
 }

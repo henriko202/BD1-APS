@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -12,7 +14,11 @@ import java.sql.SQLException;
 public abstract class DbConnection {
     
     public Connection getMyConnection() throws SQLException, ClassNotFoundException, IOException {
-        Class.forName("com.mysql.jdbc.Driver");
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+        } catch (InstantiationException | IllegalAccessException ex) {
+            Logger.getLogger(DbConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return DriverManager.getConnection(Config.URL, Config.LOGIN, Config.PASSWORD);
     }
    

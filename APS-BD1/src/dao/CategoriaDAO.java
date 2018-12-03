@@ -1,4 +1,4 @@
-package DAO;
+package dao;
 
 import model.Categoria;
 import java.sql.Connection;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
  *
  * @author henri
  */
-public class CategoriaDAO extends dao.DbConnection{
+public class CategoriaDAO extends dao.DbConnection {
 
     private Connection conn;
     private final String sqlInsert = "INSERT INTO Categoria (nome) VALUES (?)";
@@ -85,27 +85,4 @@ public class CategoriaDAO extends dao.DbConnection{
         }
     }
 
-    public Categoria find(String id) throws SQLException {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            conn = connect();
-            ps = conn.prepareStatement(sqlFind);
-            ps.setString(1, id);
-
-            rs = ps.executeQuery();
-            Categoria categoria = null;
-
-            if (rs.next()) {
-                categoria = new Categoria();
-                categoria.setId(rs.getInt("id"));
-                categoria.setNome(rs.getString("nome"));
-            }
-            return categoria;
-        } finally {
-            rs.close();
-            ps.close();
-            close(conn);
-        }
-    }
 }

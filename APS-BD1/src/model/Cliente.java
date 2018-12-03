@@ -6,20 +6,33 @@
 package model;
 
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  *
  * @author henri
  */
 public class Cliente {
+
     private int id;
-    private Date data_nasc;
+    private String data_nasc;
     private String logradouro;
     private String cidade;
     private String estado;
     private String pais;
+    private String bairro;
     private String nome;
-    private int telefone;
+    private String telefone;
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
 
     public void setLogradouro(String logradouro) {
         this.logradouro = logradouro;
@@ -41,7 +54,7 @@ public class Cliente {
         this.nome = nome;
     }
 
-    public void setTelefone(int telefone) {
+    public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
 
@@ -65,16 +78,15 @@ public class Cliente {
         return nome;
     }
 
-    public int getTelefone() {
+    public String getTelefone() {
         return telefone;
     }
-    
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public void setData_nasc(Date data_nasc) {
+    public void setData_nasc(String data_nasc) {
         this.data_nasc = data_nasc;
     }
 
@@ -82,7 +94,8 @@ public class Cliente {
         return id;
     }
 
-    public Date getData_nasc() {
+    public String getData_nasc() {
         return data_nasc;
     }
+
 }

@@ -13,10 +13,19 @@ public class Filial {
     private int id;
     private String logradouro;
     private String cidade;
+    private String bairro;
     private String estado;
     private String pais;
     private String nome;
-    private int telefone;
+    private String telefone;
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
+
+    public String getBairro() {
+        return bairro;
+    }
 
     public void setLogradouro(String logradouro) {
         this.logradouro = logradouro;
@@ -38,7 +47,7 @@ public class Filial {
         this.nome = nome;
     }
 
-    public void setTelefone(int telefone) {
+    public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
 
@@ -62,7 +71,7 @@ public class Filial {
         return nome;
     }
 
-    public int getTelefone() {
+    public String getTelefone() {
         return telefone;
     }
 

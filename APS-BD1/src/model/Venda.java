@@ -6,12 +6,14 @@
 package model;
 
 import java.sql.Date;
+import java.text.DateFormat;
 
 /**
  *
  * @author henri
  */
 public class Venda {
+
     private int id;
     private int cliente;
     private int filial;
@@ -52,6 +54,16 @@ public class Venda {
 
     public int getFuncionario() {
         return funcionario;
+    }
+
+    public String getDataMySQL() {
+        DateFormat dateFormat = DateFormat.getDateInstance();
+        String temp = dateFormat.format(this.data);
+
+        String day = temp.substring(0, 2);
+        String month = temp.substring(3, 5);
+        String year = temp.substring(6, 10);
+        return year + '/' + month + '/' + day;
     }
 
     public Date getData() {
