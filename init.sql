@@ -1,4 +1,3 @@
-
 create database if not exists BD1_APS;
 USE BD1_APS;
 DROP TABLE IF EXISTS Item;
@@ -33,7 +32,17 @@ CREATE TABLE Endereco (
 
 ####################################
 
-CREATE TABLE Entidade (
+
+CREATE TABLE Cliente (
+	id SERIAL, -- alias for BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE
+	nome TEXT NOT NULL,
+	endereco BIGINT UNSIGNED NOT NULL,
+	telefone VARCHAR(15) NOT NULL,
+	dataNasc CHAR(8) NOT NULL,
+	FOREIGN KEY (endereco) REFERENCES Endereco(id)
+);
+
+CREATE TABLE Filial (
 	id SERIAL, -- alias for BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE
 	nome TEXT NOT NULL,
 	endereco BIGINT UNSIGNED NOT NULL,
@@ -41,26 +50,21 @@ CREATE TABLE Entidade (
 	FOREIGN KEY (endereco) REFERENCES Endereco(id)
 );
 
-CREATE TABLE Cliente (
-	id BIGINT UNSIGNED NOT NULL,
-	dataNasc CHAR(8) NOT NULL,
-	FOREIGN KEY (id) REFERENCES Entidade(id)
-);
-
-CREATE TABLE Filial (
-	id BIGINT UNSIGNED NOT NULL,
-	FOREIGN KEY (id) REFERENCES Entidade(id)
-);
-
 CREATE TABLE Fornecedor (
-	id BIGINT UNSIGNED NOT NULL,
-	FOREIGN KEY (id) REFERENCES Entidade(id)
+	id SERIAL, -- alias for BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE
+	nome TEXT NOT NULL,
+	endereco BIGINT UNSIGNED NOT NULL,
+	telefone VARCHAR(15) NOT NULL,
+	FOREIGN KEY (endereco) REFERENCES Endereco(id)
 );
 
 CREATE TABLE Funcionario (
-	id BIGINT UNSIGNED NOT NULL,
-	salario DOUBLE UNSIGNED NOT NULL,
-	FOREIGN KEY (id) REFERENCES Entidade(id)
+	id SERIAL, -- alias for BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE
+	nome TEXT NOT NULL,
+	endereco BIGINT UNSIGNED NOT NULL,
+	telefone VARCHAR(15) NOT NULL,
+   	salario DOUBLE UNSIGNED NOT NULL,
+	FOREIGN KEY (endereco) REFERENCES Endereco(id)
 );
 
 ####################################
@@ -120,65 +124,49 @@ INSERT INTO Categoria (id, nome) VALUES (9, 'Drogas');
 
 INSERT INTO Endereco (id, logradouro, bairro, cidade, estado, pais)
 	VALUES (1, 'Rua Avenilo Piacentini, 90', 'Jardim Bandeirantes', 'Campo Mourão', 'PR', 'BRA');
-INSERT INTO Entidade (id, nome, endereco, telefone)
-	VALUES (1, 'Mercadinho "Totalmente não é o Paraná" Família', 1, '4435180500');
-INSERT INTO Filial (id) VALUES (1);
+INSERT INTO Filial (id, nome, endereco, telefone) VALUES (1, 'Mercadinho "Totalmente não é o Paraná" Família', 1, '4435180500');
 
 ####################################
 
 INSERT INTO Endereco (id, logradouro, bairro, cidade, estado, pais)
 	VALUES (2, 'Avenida Irmãos Pereira, 1500', 'Centro', 'Campo Mourão', 'PR', 'BRA');
-INSERT INTO Entidade (id, nome, endereco, telefone)
-	VALUES (2, 'Mercado "Não é o Paraná, juro" Max', 2, '4435182600');
-INSERT INTO Filial (id) VALUES (2);
+INSERT INTO Filial (id, nome, endereco, telefone) VALUES (2, 'Mercado "Não é o Paraná, juro" Max', 2, '4435182600');
 
 ####################################
 
 INSERT INTO Endereco (id, logradouro, bairro, cidade, estado, pais)
 	VALUES (3, 'Rua José Custódio de Oliveira, 1564', 'Centro', 'Campo Mourão', 'PR', 'BRA');
-INSERT INTO Entidade (id, nome, endereco, telefone)
-	VALUES (3, 'Drogas Vinicin', 3, '4469696969');
-INSERT INTO Fornecedor (id) VALUES (3);
+INSERT INTO Fornecedor (id, nome, endereco, telefone) VALUES (3, 'Drogas Vinicin', 3, '4469696969');
 
 ####################################
 
 INSERT INTO Endereco (id, logradouro, bairro, cidade, estado, pais)
 	VALUES (4, 'Rua São Paulo, S/n', 'Praça do Centro', 'Campo Mourão', 'PR', 'BRA');
-INSERT INTO Entidade (id, nome, endereco, telefone)
-	VALUES (4, 'Mendigo da Cachaça', 4, '4598989898');
-INSERT INTO Fornecedor (id) VALUES (4);
+INSERT INTO Fornecedor (id, nome, endereco, telefone) VALUES (4, 'Mendigo da Cachaça', 4, '4598989898');
 
 ####################################
 
 INSERT INTO Endereco (id, logradouro, bairro, cidade, estado, pais)
 	VALUES (5, 'Avenina JK', 'Centro', 'Campo Mourão', 'PR', 'BRA');
-INSERT INTO Entidade (id, nome, endereco, telefone)
-	VALUES (5, 'Neusa', 5, '4435262020');
-INSERT INTO funcionario (id, salario) VALUES (5, 150.00);
+INSERT INTO funcionario (id, nome, endereco, telefone, salario) VALUES (5, 'Neusa', 5, '4435262020', 150.00);
 
 ####################################
 
 INSERT INTO Endereco (id, logradouro, bairro, cidade, estado, pais)
 	VALUES (6, 'Rua Pitanga', 'Centro', 'Campo Mourão', 'PR', 'BRA');
-INSERT INTO Entidade (id, nome, endereco, telefone)
-	VALUES (6, 'Senhor Dono', 6, '4450550555');
-INSERT INTO funcionario (id, salario) VALUES (6, 5800.00);
+INSERT INTO funcionario (id, nome, endereco, telefone, salario) VALUES (6, 'Senhor Dono', 6, '4450550555', 5800.00);
 
 ####################################
 
 INSERT INTO Endereco (id, logradouro, bairro, cidade, estado, pais)
 	VALUES (7, 'Avenida José Custódio de Oliveira', 'Centro', 'Campo Mourão', 'PR', 'BRA');
-INSERT INTO Entidade (id, nome, endereco, telefone)
-	VALUES (7, 'Henriko Alberton', 7, '44933000582');
-INSERT INTO Cliente (id, dataNasc) VALUES (7, '20041998');
+INSERT INTO Cliente (id, nome, endereco, telefone, dataNasc) VALUES (7,  'Henriko Alberton', 7, '44933000582', '20041998');
 
 ####################################
 
 INSERT INTO Endereco (id, logradouro, bairro, cidade, estado, pais)
 	VALUES (8, 'Rua Pitanga, 42', 'Centro', 'Campo Mourão', 'PR', 'BRA');
-INSERT INTO Entidade (id, nome, endereco, telefone)
-	VALUES (8, 'Gueremias', 8, '4598502691');
-INSERT INTO Cliente (id, dataNasc) VALUES (8, '25121998');
+INSERT INTO Cliente (id, nome, endereco, telefone, dataNasc) VALUES (8, 'Gueremias', 8, '4598502691', '25121998');
 
 ####################################
 
