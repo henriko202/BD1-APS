@@ -59,7 +59,6 @@ public class Venda extends javax.swing.JFrame {
         salvar = new javax.swing.JButton();
         remover = new javax.swing.JButton();
         cancelar = new javax.swing.JButton();
-        listar = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jcbFunc = new javax.swing.JComboBox<>();
@@ -135,22 +134,13 @@ public class Venda extends javax.swing.JFrame {
             }
         });
 
-        listar.setText("Listar");
-        listar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                listarActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(salvar)
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(listar)
+                .addComponent(salvar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(remover)
                 .addGap(0, 0, Short.MAX_VALUE)
@@ -164,14 +154,13 @@ public class Venda extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(remover, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(cancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(salvar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(listar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(salvar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
         jLabel1.setText("Funcionário");
 
-        jLabel2.setText("Produtos");
+        jLabel2.setText("Items");
 
         jcbFunc.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
@@ -363,7 +352,7 @@ public class Venda extends javax.swing.JFrame {
         int dialogResult = JOptionPane.showConfirmDialog(null, "Você tem certeza que deseja salvar esse registro?", "Confirmação?", JOptionPane.YES_NO_OPTION);
 
         if (dialogResult == JOptionPane.YES_OPTION) {
-            if(!txtId.getText().isEmpty()){
+            if (!txtId.getText().isEmpty()) {
                 try {
                     updateRecord();
                     clearInputBoxes();
@@ -392,7 +381,15 @@ public class Venda extends javax.swing.JFrame {
     }//GEN-LAST:event_jcbFilialActionPerformed
 
     private void adicionarProdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adicionarProdActionPerformed
-        // TODO add your handling code here:
+        Item form;
+        try {
+            form = new Item();
+            form.setLocationRelativeTo(null);
+            form.setVisible(true);
+        } catch (SQLException ex) {
+            Logger.getLogger(Venda.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }//GEN-LAST:event_adicionarProdActionPerformed
 
     private void removerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removerActionPerformed
@@ -461,10 +458,6 @@ public class Venda extends javax.swing.JFrame {
         }
         // TODO add your handling code here:
     }//GEN-LAST:event_btnProdFornecActionPerformed
-
-    private void listarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listarActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_listarActionPerformed
 
     private void txtDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDataActionPerformed
         // TODO add your handling code here:
@@ -536,7 +529,6 @@ public class Venda extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jcbCliente;
     private javax.swing.JComboBox<String> jcbFilial;
     private javax.swing.JComboBox<String> jcbFunc;
-    private javax.swing.JButton listar;
     private javax.swing.JLabel nome;
     private javax.swing.JButton remover;
     private javax.swing.JButton salvar;
@@ -589,9 +581,9 @@ public class Venda extends javax.swing.JFrame {
 
                     txtId.setText(id.toString());
                     txtData.setText(data.toString());
-                    jcbCliente.setSelectedItem(Integer.parseInt(cliente.toString()));
-                    jcbFilial.setSelectedItem(Integer.parseInt(filial.toString()));
-                    jcbFunc.setSelectedItem(Integer.parseInt(funcionario.toString()));
+                    jcbCliente.setSelectedItem(cliente.toString());
+                    jcbFilial.setSelectedItem(filial.toString());
+                    jcbFunc.setSelectedItem(funcionario.toString());
 
                 }
             } catch (Exception ex) {

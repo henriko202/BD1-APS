@@ -96,9 +96,9 @@ public class ProdutoFornecedor extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(0, 45, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(salvar)
-                .addGap(0, 45, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(remover)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -275,8 +275,8 @@ public class ProdutoFornecedor extends javax.swing.JFrame {
                     Object produto = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 0);
                     Object fornecedor = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 1);
 
-                    jcbFornecedor.setSelectedItem(Integer.parseInt(produto.toString()));
-                    jcbProduto.setSelectedItem(Integer.parseInt(fornecedor.toString()));
+                    jcbFornecedor.setSelectedItem(produto.toString());
+                    jcbProduto.setSelectedItem(fornecedor.toString());
 
                 }
             } catch (Exception ex) {
