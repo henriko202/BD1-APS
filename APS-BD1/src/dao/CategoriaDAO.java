@@ -85,4 +85,50 @@ public class CategoriaDAO extends dao.DbConnection {
         }
     }
 
+    public Categoria find(int id) throws SQLException {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            conn = connect();
+            ps = conn.prepareStatement(sqlFind);
+            ps.setInt(1, id);
+
+            rs = ps.executeQuery();
+            Categoria categoria = null;
+
+            if (rs.next()) {
+                categoria = new Categoria();
+                categoria.setNome(rs.getString("nome"));
+            }
+            return categoria;
+        } finally {
+            rs.close();
+            ps.close();
+            close(conn);
+        }
+    }
+
+    public Categoria find(String nome) throws SQLException {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            conn = connect();
+            ps = conn.prepareStatement(sqlFind);
+            ps.setString(1, nome);
+
+            rs = ps.executeQuery();
+            Categoria categoria = null;
+
+            if (rs.next()) {
+                categoria = new Categoria();
+                categoria.setId(rs.getInt("id"));
+            }
+            return categoria;
+        } finally {
+            rs.close();
+            ps.close();
+            close(conn);
+        }
+    }
+
 }

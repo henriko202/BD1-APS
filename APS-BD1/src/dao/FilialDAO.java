@@ -22,8 +22,7 @@ public class FilialDAO extends dao.DbConnection {
     private final String sqlInsert = "INSERT INTO Filial (nome, logradouro, bairro, cidade, estado, pais, telefone) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private final String sqlUpdate = "UPDATE Filial SET nome = ?, logradouro = ?, bairro = ?, cidade = ?, estado = ?, pais = ?, telefone=? WHERE id = ? ";
     private final String sqlRemove = "DELETE FROM Filial WHERE id = ?";
-    private final String sqlList = "SELECT id, nome FROM Filial ORDER BY id";
-    private final String sqlFind = "SELECT id, nome FROM Filial WHERE id = ?";
+    private final String sqlList = "SELECT id, nome, logradouro, bairro, cidade, estado, pais, telefone FROM Filial ORDER BY id";
 
     public void insert(Filial filial) throws SQLException {
         PreparedStatement ps = null;

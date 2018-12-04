@@ -5,6 +5,21 @@
  */
 package gui;
 
+import static com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Int;
+import dao.CategoriaDAO;
+import dao.ProdutoDAO;
+import java.math.BigInteger;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.DefaultTableCellRenderer;
+
 /**
  *
  * @author henri
@@ -16,6 +31,12 @@ public class Produto extends javax.swing.JFrame {
      */
     public Produto() {
         initComponents();
+        try {
+            fillCBCat();
+            loadRecords();
+        } catch (SQLException ex) {
+            Logger.getLogger(Produto.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -40,6 +61,8 @@ public class Produto extends javax.swing.JFrame {
         jcbCat = new javax.swing.JComboBox<>();
         preco = new javax.swing.JLabel();
         txtPreco = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        txtId = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -53,17 +76,17 @@ public class Produto extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "ID", "Nome", "Preco"
+                "ID", "Nome", "Categoria", "Preco"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Double.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -87,6 +110,11 @@ public class Produto extends javax.swing.JFrame {
         });
 
         cancelar.setText("Cancelar");
+        cancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -125,11 +153,20 @@ public class Produto extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setText("ID");
+
+        txtId.setEditable(false);
+        txtId.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtIdActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -139,19 +176,24 @@ public class Produto extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(categoria)
                             .addComponent(nome)
-                            .addComponent(preco))
+                            .addComponent(preco)
+                            .addComponent(jLabel1))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtNome, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
                             .addComponent(jcbCat, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtPreco, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
+                            .addComponent(txtPreco, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                            .addComponent(txtId, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(txtId, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(nome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -163,7 +205,7 @@ public class Produto extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(preco)
                     .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -188,7 +230,31 @@ public class Produto extends javax.swing.JFrame {
     }//GEN-LAST:event_txtNomeActionPerformed
 
     private void salvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salvarActionPerformed
-        // TODO add your handling code here:
+        int dialogResult = JOptionPane.showConfirmDialog(null, "Você tem certeza que deseja salvar esse registro?", "Confirmação?", JOptionPane.YES_NO_OPTION);
+
+        if (dialogResult == JOptionPane.YES_OPTION) {
+            if (!txtId.getText().isEmpty()) {
+                try {
+                    updateRecord();
+                    clearInputBoxes();
+                    loadRecords();
+                    return;
+                } catch (SQLException | ParseException ex) {
+                    Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            try {
+                try {
+                    addNew();
+                } catch (ParseException ex) {
+                    Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                clearInputBoxes();
+                loadRecords();
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
     }//GEN-LAST:event_salvarActionPerformed
 
     private void txtPrecoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPrecoActionPerformed
@@ -196,8 +262,29 @@ public class Produto extends javax.swing.JFrame {
     }//GEN-LAST:event_txtPrecoActionPerformed
 
     private void removerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removerActionPerformed
-        // TODO add your handling code here:
+        if (!txtNome.getText().isEmpty()) {
+            int dialogResult = JOptionPane.showConfirmDialog(null, "Você tem certeza que deseja excluir esse registro?", "Confirmação?", JOptionPane.YES_NO_OPTION);
+
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                try {
+                    deleteRecord();
+                    loadRecords();
+                    clearInputBoxes();
+
+                } catch (SQLException ex) {
+                    System.out.println(ex.getMessage());
+                }
+            }
+        }
     }//GEN-LAST:event_removerActionPerformed
+
+    private void txtIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtIdActionPerformed
+
+    private void cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarActionPerformed
+        clearInputBoxes();
+    }//GEN-LAST:event_cancelarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -237,6 +324,7 @@ public class Produto extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelar;
     private javax.swing.JLabel categoria;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
@@ -246,7 +334,99 @@ public class Produto extends javax.swing.JFrame {
     private javax.swing.JLabel preco;
     private javax.swing.JButton remover;
     private javax.swing.JButton salvar;
+    private javax.swing.JTextField txtId;
     private javax.swing.JTextField txtNome;
     private javax.swing.JTextField txtPreco;
     // End of variables declaration//GEN-END:variables
+
+    final void fillCBCat() throws SQLException {
+        CategoriaDAO dao = new CategoriaDAO();
+        List<model.Categoria> categoria = dao.list();
+        jcbCat.removeAllItems();
+        for (model.Categoria p : categoria) {
+            jcbCat.addItem(p.getNome());
+        }
+    }
+
+    private void loadRecords() throws SQLException {
+        String sql = "SELECT id, nome, categoria, preco FROM Produto ORDER BY id;";
+        ResultSetTableModel tableModel = new ResultSetTableModel(sql);
+        jTable1.setModel(tableModel);
+
+        //Adjusting columns 
+        jTable1.getColumnModel().getColumn(0).setWidth(200);
+        jTable1.getColumnModel().getColumn(0).setMinWidth(50);
+        jTable1.getColumnModel().getColumn(0).setMaxWidth(200);
+
+        jTable1.getSelectionModel().addListSelectionListener((ListSelectionEvent event) -> {
+            try {
+                if (jTable1.getSelectedRow() >= 0) {
+                    Object id = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 0);
+                    Object nome = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 1);
+                    BigInteger categoria = (BigInteger) jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 2);
+                    Object preco = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 3);
+                    txtId.setText(id.toString());
+                    txtNome.setText(nome.toString());
+                    txtPreco.setText(preco.toString());
+                    CategoriaDAO cat = new CategoriaDAO();
+                    Integer i = new Integer(categoria.intValue());
+                    jcbCat.setSelectedItem(cat.find(i).getNome());
+
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        });
+
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+        jTable1.getColumnModel().getColumn(0).setCellRenderer(rightRenderer);
+    }
+
+    private void clearInputBoxes() {
+        txtNome.setText("");
+        txtId.setText("");
+        txtPreco.setText("");
+    }
+
+    private void addNew() throws SQLException, ParseException {
+        ProdutoDAO dao = new ProdutoDAO();
+        model.Produto prod = new model.Produto();
+        prod.setNome(txtNome.getText());
+
+        CategoriaDAO cat = new CategoriaDAO();
+        List<model.Categoria> categoria = cat.list();
+        
+        for (model.Categoria p : categoria) {
+            if (p.getNome().equals(jcbCat.getSelectedItem().toString())) {
+                prod.setCategoria(p.getId());
+            }
+        }
+        prod.setPreco(Double.parseDouble(txtPreco.getText()));
+
+        dao.insert(prod);
+    }
+
+    private void updateRecord() throws SQLException, ParseException {
+        ProdutoDAO dao = new ProdutoDAO();
+        model.Produto prod = new model.Produto();
+        prod.setNome(txtNome.getText());
+        prod.setId(Integer.parseInt(txtId.getText()));
+
+        CategoriaDAO cat = new CategoriaDAO();
+        List<model.Categoria> categoria = cat.list();
+        
+        for (model.Categoria p : categoria) {
+            if (p.getNome().equals(jcbCat.getSelectedItem().toString())) {
+                prod.setCategoria(p.getId());
+            }
+        }
+        prod.setPreco(Double.parseDouble(txtPreco.getText()));
+        dao.update(prod);
+    }
+
+    private void deleteRecord() throws SQLException {
+        ProdutoDAO dao = new ProdutoDAO();
+        dao.remove(Integer.parseInt(txtId.getText()));
+    }
 }

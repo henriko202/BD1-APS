@@ -5,6 +5,19 @@
  */
 package gui;
 
+import dao.ProdutoDAO;
+import dao.FornecedorDAO;
+import dao.ProdutoFornecedorDAO;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.DefaultTableCellRenderer;
+
 /**
  *
  * @author henri
@@ -14,8 +27,11 @@ public class ProdutoFornecedor extends javax.swing.JFrame {
     /**
      * Creates new form ProdutoFornecedor
      */
-    public ProdutoFornecedor() {
+    public ProdutoFornecedor() throws SQLException {
         initComponents();
+        fillCBFornecedor();
+        fillCBProduto();
+        loadRecords();
     }
 
     /**
@@ -32,9 +48,7 @@ public class ProdutoFornecedor extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         salvar = new javax.swing.JButton();
-        limpar = new javax.swing.JButton();
-        buscar = new javax.swing.JButton();
-        cancelar = new javax.swing.JButton();
+        remover = new javax.swing.JButton();
         produto = new javax.swing.JLabel();
         jcbProduto = new javax.swing.JComboBox<>();
         fornecedor = new javax.swing.JLabel();
@@ -50,11 +64,11 @@ public class ProdutoFornecedor extends javax.swing.JFrame {
                 {null, null}
             },
             new String [] {
-                "ID", "Nome"
+                "Produto", "Fornecedor"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.Integer.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -70,26 +84,23 @@ public class ProdutoFornecedor extends javax.swing.JFrame {
             }
         });
 
-        limpar.setText("Limpar");
-
-        buscar.setText("Buscar");
-
-        cancelar.setText("Cancelar");
+        remover.setText("Remover");
+        remover.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removerActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(0, 18, Short.MAX_VALUE)
+                .addGap(0, 45, Short.MAX_VALUE)
                 .addComponent(salvar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
-                .addComponent(limpar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
-                .addComponent(buscar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
-                .addComponent(cancelar)
-                .addGap(0, 22, Short.MAX_VALUE))
+                .addGap(0, 45, Short.MAX_VALUE)
+                .addComponent(remover)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -97,10 +108,7 @@ public class ProdutoFornecedor extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(salvar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(limpar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(buscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(cancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(remover, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
 
@@ -116,7 +124,7 @@ public class ProdutoFornecedor extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 468, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -165,8 +173,39 @@ public class ProdutoFornecedor extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void salvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salvarActionPerformed
-        // TODO add your handling code here:
+        int dialogResult = JOptionPane.showConfirmDialog(null, "Você tem certeza que deseja salvar esse registro?", "Confirmação?", JOptionPane.YES_NO_OPTION);
+
+        if (dialogResult == JOptionPane.YES_OPTION) {
+            try {
+                try {
+                    addNew();
+                } catch (ParseException ex) {
+                    Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                loadRecords();
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
     }//GEN-LAST:event_salvarActionPerformed
+
+    private void removerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removerActionPerformed
+
+            int dialogResult = JOptionPane.showConfirmDialog(null, "Você tem certeza que deseja excluir esse registro?", "Confirmação?", JOptionPane.YES_NO_OPTION);
+
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                try {
+                    deleteRecord();
+                    loadRecords();
+                    
+
+                } catch (SQLException ex) {
+                    System.out.println(ex.getMessage());
+                }
+            }
+        
+    }//GEN-LAST:event_removerActionPerformed
 
     /**
      * @param args the command line arguments
@@ -198,14 +237,16 @@ public class ProdutoFornecedor extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ProdutoFornecedor().setVisible(true);
+                try {
+                    new ProdutoFornecedor().setVisible(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(ProdutoFornecedor.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buscar;
-    private javax.swing.JButton cancelar;
     private javax.swing.JLabel fornecedor;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -213,8 +254,78 @@ public class ProdutoFornecedor extends javax.swing.JFrame {
     private javax.swing.JTable jTable1;
     private javax.swing.JComboBox<String> jcbFornecedor;
     private javax.swing.JComboBox<String> jcbProduto;
-    private javax.swing.JButton limpar;
     private javax.swing.JLabel produto;
+    private javax.swing.JButton remover;
     private javax.swing.JButton salvar;
     // End of variables declaration//GEN-END:variables
+
+    private void loadRecords() throws SQLException {
+        String sql = "SELECT produto, fornecedor FROM ProdutoFornecido ORDER BY produto;";
+        ResultSetTableModel tableModel = new ResultSetTableModel(sql);
+        jTable1.setModel(tableModel);
+
+        //Adjusting columns 
+        jTable1.getColumnModel().getColumn(0).setWidth(200);
+        jTable1.getColumnModel().getColumn(0).setMinWidth(50);
+        jTable1.getColumnModel().getColumn(0).setMaxWidth(200);
+
+        jTable1.getSelectionModel().addListSelectionListener((ListSelectionEvent event) -> {
+            try {
+                if (jTable1.getSelectedRow() >= 0) {
+                    Object produto = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 0);
+                    Object fornecedor = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 1);
+
+                    jcbFornecedor.setSelectedIndex(Integer.parseInt(produto.toString()));
+                    jcbProduto.setSelectedItem(Integer.parseInt(fornecedor.toString()));
+
+                }
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+        });
+
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+        jTable1.getColumnModel().getColumn(0).setCellRenderer(rightRenderer);
+    }
+
+    private void addNew() throws SQLException, ParseException {
+        ProdutoFornecedorDAO dao = new ProdutoFornecedorDAO();
+        model.ProdutoFornecedor cat = new model.ProdutoFornecedor();
+        cat.setProduto(Integer.parseInt(jcbProduto.getSelectedItem().toString()));
+        cat.setFornecedor(Integer.parseInt(jcbFornecedor.getSelectedItem().toString()));
+        dao.insert(cat);
+    }
+
+    private void updateRecord() throws SQLException, ParseException {
+        ProdutoFornecedorDAO dao = new ProdutoFornecedorDAO();
+        model.ProdutoFornecedor cat = new model.ProdutoFornecedor();
+        cat.setProduto(Integer.parseInt(jcbProduto.getSelectedItem().toString()));
+        cat.setFornecedor(Integer.parseInt(jcbFornecedor.getSelectedItem().toString()));
+        dao.update(cat);
+    }
+
+    private void deleteRecord() throws SQLException {
+        ProdutoFornecedorDAO dao = new ProdutoFornecedorDAO();
+        dao.remove(Integer.parseInt(jcbProduto.getSelectedItem().toString()), Integer.parseInt(jcbFornecedor.getSelectedItem().toString()));
+    }
+
+    final void fillCBProduto() throws SQLException {
+        ProdutoDAO dao = new ProdutoDAO();
+        List<model.Produto> produto = dao.list();
+        jcbProduto.removeAllItems();
+        for (model.Produto p : produto) {
+            jcbProduto.addItem(Integer.toString(p.getId()));
+        }
+    }
+
+    final void fillCBFornecedor() throws SQLException {
+        FornecedorDAO dao = new FornecedorDAO();
+        List<model.Fornecedor> fornecedor = dao.list();
+        jcbFornecedor.removeAllItems();
+        for (model.Fornecedor p : fornecedor) {
+            jcbFornecedor.addItem(Integer.toString(p.getId()));
+        }
+    }
+
 }

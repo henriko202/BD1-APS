@@ -22,8 +22,8 @@ public class FuncionarioDAO extends dao.DbConnection {
     private final String sqlInsert = "INSERT INTO Funcionario (nome, logradouro, bairro, cidade, estado, pais, telefone, salario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     private final String sqlUpdate = "UPDATE Funcionario SET nome = ?, logradouro = ?, bairro = ?, cidade = ?, estado = ?, pais = ?, telefone=?, salario=? WHERE id = ? ";
     private final String sqlRemove = "DELETE FROM Funcionario WHERE id = ?";
-    private final String sqlList = "SELECT id, nome FROM Funcionario ORDER BY id";
-    private final String sqlFind = "SELECT id, nome FROM Funcionario WHERE id = ?";
+    private final String sqlList = "SELECT id, nome, logradouro, bairro, cidade, estado, pais, telefone, salario FROM Funcionario ORDER BY id";
+    
 
     public void insert(Funcionario cliente) throws SQLException {
         PreparedStatement ps = null;

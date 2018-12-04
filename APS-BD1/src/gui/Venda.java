@@ -5,9 +5,16 @@
  */
 package gui;
 
+import dao.ClienteDAO;
+import dao.FilialDAO;
+import dao.FuncionarioDAO;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -18,8 +25,11 @@ public class Venda extends javax.swing.JFrame {
     /**
      * Creates new form Venda
      */
-    public Venda() {
+    public Venda() throws SQLException {
         initComponents();
+        fillCBCliente();
+        fillCBFilial();
+        fillCBFunc();
     }
 
     /**
@@ -42,6 +52,7 @@ public class Venda extends javax.swing.JFrame {
         salvar = new javax.swing.JButton();
         remover = new javax.swing.JButton();
         cancelar = new javax.swing.JButton();
+        listar = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jcbFunc = new javax.swing.JComboBox<>();
@@ -57,6 +68,8 @@ public class Venda extends javax.swing.JFrame {
         btnProdFornec = new javax.swing.JToggleButton();
         jLabel3 = new javax.swing.JLabel();
         txtPreco = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        txtId = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -120,16 +133,25 @@ public class Venda extends javax.swing.JFrame {
 
         cancelar.setText("Cancelar");
 
+        listar.setText("Listar");
+        listar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                listarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addContainerGap()
                 .addComponent(salvar)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(listar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(remover)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(cancelar)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -137,11 +159,11 @@ public class Venda extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(remover, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(salvar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(remover, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(cancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(listar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -219,6 +241,10 @@ public class Venda extends javax.swing.JFrame {
 
         txtPreco.setEditable(false);
 
+        jLabel4.setText("Id");
+
+        txtId.setEditable(false);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -234,7 +260,8 @@ public class Venda extends javax.swing.JFrame {
                             .addComponent(nome)
                             .addComponent(jLabel1)
                             .addComponent(jLabel2)
-                            .addComponent(jLabel6))
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jTextField1)
@@ -242,7 +269,9 @@ public class Venda extends javax.swing.JFrame {
                             .addComponent(jcbFilial, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jcbCliente, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(adicionarProd)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(adicionarProd)
+                                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -279,6 +308,10 @@ public class Venda extends javax.swing.JFrame {
                     .addComponent(btnProduto)
                     .addComponent(btnProdFornec))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(13, 13, 13)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(nome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jcbCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -381,10 +414,20 @@ public class Venda extends javax.swing.JFrame {
     }//GEN-LAST:event_btnProdutoActionPerformed
 
     private void btnProdFornecActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdFornecActionPerformed
-        ProdutoFornecedor form = new ProdutoFornecedor();
-        form.setLocationRelativeTo(null);
-        form.setVisible(true);        // TODO add your handling code here:
+        ProdutoFornecedor form;
+        try {
+            form = new gui.ProdutoFornecedor();
+            form.setLocationRelativeTo(null);
+            form.setVisible(true);
+        } catch (SQLException ex) {
+            Logger.getLogger(Venda.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        // TODO add your handling code here:
     }//GEN-LAST:event_btnProdFornecActionPerformed
+
+    private void listarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_listarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -416,7 +459,11 @@ public class Venda extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Venda().setVisible(true);
+                try {
+                    new Venda().setVisible(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Venda.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -435,6 +482,7 @@ public class Venda extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -444,18 +492,38 @@ public class Venda extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jcbCliente;
     private javax.swing.JComboBox<String> jcbFilial;
     private javax.swing.JComboBox<String> jcbFunc;
+    private javax.swing.JButton listar;
     private javax.swing.JLabel nome;
     private javax.swing.JButton remover;
     private javax.swing.JButton salvar;
+    private javax.swing.JTextField txtId;
     private javax.swing.JTextField txtPreco;
     // End of variables declaration//GEN-END:variables
 
-public static String sqlDateToString(java.sql.Date date){
-        if(date != null) {
-            java.util.Date utilDate = new java.util.Date(date.getTime());
-            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-            return dateFormat.format(utilDate);
+    final void fillCBCliente() throws SQLException {
+        ClienteDAO dao = new ClienteDAO();
+        List<model.Cliente> fornecedor = dao.list();
+        jcbCliente.removeAllItems();
+        for (model.Cliente p : fornecedor) {
+            jcbCliente.addItem(Integer.toString(p.getId()));
         }
-        return null;
+    }
+
+    final void fillCBFilial() throws SQLException {
+        FilialDAO dao = new FilialDAO();
+        List<model.Filial> fornecedor = dao.list();
+        jcbFilial.removeAllItems();
+        for (model.Filial p : fornecedor) {
+            jcbFilial.addItem(Integer.toString(p.getId()));
+        }
+    }
+    
+    final void fillCBFunc() throws SQLException {
+        FuncionarioDAO dao = new FuncionarioDAO();
+        List<model.Funcionario> fornecedor = dao.list();
+        jcbFunc.removeAllItems();
+        for (model.Funcionario p : fornecedor) {
+            jcbFunc.addItem(Integer.toString(p.getId()));
+        }
     }
 }

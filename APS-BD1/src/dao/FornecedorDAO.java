@@ -22,7 +22,7 @@ public class FornecedorDAO extends dao.DbConnection {
     private final String sqlInsert = "INSERT INTO Fornecedor (nome, logradouro, bairro, cidade, estado, pais, telefone) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private final String sqlUpdate = "UPDATE Fornecedor SET nome = ?, logradouro = ?, bairro = ?, cidade = ?, estado = ?, pais = ?, telefone=? WHERE id = ? ";
     private final String sqlRemove = "DELETE FROM Fornecedor WHERE id = ?";
-    private final String sqlList = "SELECT id, nome FROM Fornecedor ORDER BY id";
+    private final String sqlList = "SELECT id, nome, logradouro, bairro, cidade, estado, pais, telefone FROM Fornecedor ORDER BY id";
     private final String sqlFind = "SELECT id, nome FROM Fornecedor WHERE id = ?";
 
     public void insert(Fornecedor filial) throws SQLException {
