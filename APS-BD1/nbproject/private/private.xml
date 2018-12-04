@@ -3,12 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/henriko202/NetBeansProjects/BD1-APS/APS-BD1/src/gui/Funcionario.java</file>
-            <file>file:/home/henriko202/NetBeansProjects/BD1-APS/APS-BD1/src/dao/ProdutoFornecedorDAO.java</file>
-            <file>file:/home/henriko202/NetBeansProjects/BD1-APS/APS-BD1/src/gui/Cliente.java</file>
-            <file>file:/home/henriko202/NetBeansProjects/BD1-APS/APS-BD1/src/gui/Produto.java</file>
-            <file>file:/home/henriko202/NetBeansProjects/BD1-APS/APS-BD1/src/dao/CategoriaDAO.java</file>
-            <file>file:/home/henriko202/NetBeansProjects/BD1-APS/APS-BD1/src/dao/ProdutoDAO.java</file>
+            <file>file:/home/henriko202/NetBeansProjects/BD1-APS/APS-BD1/src/gui/Venda.java</file>
+            <file>file:/home/henriko202/NetBeansProjects/BD1-APS/APS-BD1/src/dao/VendaDAO.java</file>
             <file>file:/home/henriko202/NetBeansProjects/BD1-APS/APS-BD1/src/gui/ProdutoFornecedor.java</file>
         </group>
     </open-files>

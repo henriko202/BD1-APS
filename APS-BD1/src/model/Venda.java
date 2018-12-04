@@ -5,7 +5,7 @@
  */
 package model;
 
-import java.sql.Date;
+
 import java.text.DateFormat;
 
 /**
@@ -18,7 +18,7 @@ public class Venda {
     private int cliente;
     private int filial;
     private int funcionario;
-    private Date data;
+    private String data;
 
     public void setId(int id) {
         this.id = id;
@@ -36,7 +36,7 @@ public class Venda {
         this.funcionario = funcionario;
     }
 
-    public void setData(Date data) {
+    public void setData(String data) {
         this.data = data;
     }
 
@@ -66,7 +66,7 @@ public class Venda {
         return year + '/' + month + '/' + day;
     }
 
-    public Date getData() {
+    public String getData() {
         return data;
     }
 }

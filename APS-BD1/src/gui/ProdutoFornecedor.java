@@ -275,7 +275,7 @@ public class ProdutoFornecedor extends javax.swing.JFrame {
                     Object produto = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 0);
                     Object fornecedor = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 1);
 
-                    jcbFornecedor.setSelectedIndex(Integer.parseInt(produto.toString()));
+                    jcbFornecedor.setSelectedItem(Integer.parseInt(produto.toString()));
                     jcbProduto.setSelectedItem(Integer.parseInt(fornecedor.toString()));
 
                 }

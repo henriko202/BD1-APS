@@ -8,13 +8,19 @@ package gui;
 import dao.ClienteDAO;
 import dao.FilialDAO;
 import dao.FuncionarioDAO;
+import dao.VendaDAO;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  *
@@ -30,6 +36,7 @@ public class Venda extends javax.swing.JFrame {
         fillCBCliente();
         fillCBFilial();
         fillCBFunc();
+        loadRecords();
     }
 
     /**
@@ -57,7 +64,7 @@ public class Venda extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jcbFunc = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtData = new javax.swing.JTextField();
         adicionarProd = new javax.swing.JToggleButton();
         btnCat = new javax.swing.JToggleButton();
         btnCliente = new javax.swing.JToggleButton();
@@ -88,34 +95,24 @@ public class Venda extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "ID", "Nome", "Qtde"
+                "ID", "Cliente", "Filial", "Funcionario", "Data"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, true
+                java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
         });
         jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(2).setResizable(false);
-        }
 
         salvar.setText("Salvar");
         salvar.addActionListener(new java.awt.event.ActionListener() {
@@ -132,6 +129,11 @@ public class Venda extends javax.swing.JFrame {
         });
 
         cancelar.setText("Cancelar");
+        cancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelarActionPerformed(evt);
+            }
+        });
 
         listar.setText("Listar");
         listar.addActionListener(new java.awt.event.ActionListener() {
@@ -173,11 +175,11 @@ public class Venda extends javax.swing.JFrame {
 
         jcbFunc.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jLabel6.setText("Desconto");
+        jLabel6.setText("Data");
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtData.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtDataActionPerformed(evt);
             }
         });
 
@@ -264,7 +266,7 @@ public class Venda extends javax.swing.JFrame {
                             .addComponent(jLabel4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField1)
+                            .addComponent(txtData)
                             .addComponent(jcbFunc, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jcbFilial, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jcbCliente, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -327,11 +329,11 @@ public class Venda extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(adicionarProd))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 14, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27)
+                    .addComponent(txtData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -358,23 +360,54 @@ public class Venda extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void salvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salvarActionPerformed
-        // TODO add your handling code here:
+        int dialogResult = JOptionPane.showConfirmDialog(null, "Você tem certeza que deseja salvar esse registro?", "Confirmação?", JOptionPane.YES_NO_OPTION);
+
+        if (dialogResult == JOptionPane.YES_OPTION) {
+            if(!txtId.getText().isEmpty()){
+                try {
+                    updateRecord();
+                    clearInputBoxes();
+                    loadRecords();
+                    return;
+                } catch (SQLException | ParseException ex) {
+                    Logger.getLogger(Categoria.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            try {
+                try {
+                    addNew();
+                } catch (ParseException ex) {
+                    Logger.getLogger(Categoria.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                clearInputBoxes();
+                loadRecords();
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
     }//GEN-LAST:event_salvarActionPerformed
 
     private void jcbFilialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbFilialActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jcbFilialActionPerformed
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
-
     private void adicionarProdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adicionarProdActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_adicionarProdActionPerformed
 
     private void removerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removerActionPerformed
-        // TODO add your handling code here:
+        int dialogResult = JOptionPane.showConfirmDialog(null, "Você tem certeza que deseja excluir esse registro?", "Confirmação?", JOptionPane.YES_NO_OPTION);
+
+        if (dialogResult == JOptionPane.YES_OPTION) {
+            try {
+                deleteRecord();
+                loadRecords();
+                clearInputBoxes();
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+
     }//GEN-LAST:event_removerActionPerformed
 
     private void btnCatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCatActionPerformed
@@ -402,9 +435,13 @@ public class Venda extends javax.swing.JFrame {
     }//GEN-LAST:event_btnFornecedorActionPerformed
 
     private void btnFuncionarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFuncionarioActionPerformed
-        Funcionario form = new Funcionario();
+        Funcionario form;
+
+        form = new Funcionario();
         form.setLocationRelativeTo(null);
-        form.setVisible(true);        // TODO add your handling code here:
+        form.setVisible(true);
+
+        // TODO add your handling code here:
     }//GEN-LAST:event_btnFuncionarioActionPerformed
 
     private void btnProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdutoActionPerformed
@@ -428,6 +465,14 @@ public class Venda extends javax.swing.JFrame {
     private void listarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listarActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_listarActionPerformed
+
+    private void txtDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDataActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtDataActionPerformed
+
+    private void cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarActionPerformed
+        clearInputBoxes();
+    }//GEN-LAST:event_cancelarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -488,7 +533,6 @@ public class Venda extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JComboBox<String> jcbCliente;
     private javax.swing.JComboBox<String> jcbFilial;
     private javax.swing.JComboBox<String> jcbFunc;
@@ -496,34 +540,102 @@ public class Venda extends javax.swing.JFrame {
     private javax.swing.JLabel nome;
     private javax.swing.JButton remover;
     private javax.swing.JButton salvar;
+    private javax.swing.JTextField txtData;
     private javax.swing.JTextField txtId;
     private javax.swing.JTextField txtPreco;
     // End of variables declaration//GEN-END:variables
 
     final void fillCBCliente() throws SQLException {
         ClienteDAO dao = new ClienteDAO();
-        List<model.Cliente> fornecedor = dao.list();
+        List<model.Cliente> venda = dao.list();
         jcbCliente.removeAllItems();
-        for (model.Cliente p : fornecedor) {
+        for (model.Cliente p : venda) {
             jcbCliente.addItem(Integer.toString(p.getId()));
         }
     }
 
     final void fillCBFilial() throws SQLException {
         FilialDAO dao = new FilialDAO();
-        List<model.Filial> fornecedor = dao.list();
+        List<model.Filial> venda = dao.list();
         jcbFilial.removeAllItems();
-        for (model.Filial p : fornecedor) {
+        for (model.Filial p : venda) {
             jcbFilial.addItem(Integer.toString(p.getId()));
         }
     }
-    
+
     final void fillCBFunc() throws SQLException {
         FuncionarioDAO dao = new FuncionarioDAO();
-        List<model.Funcionario> fornecedor = dao.list();
+        List<model.Funcionario> venda = dao.list();
         jcbFunc.removeAllItems();
-        for (model.Funcionario p : fornecedor) {
+        for (model.Funcionario p : venda) {
             jcbFunc.addItem(Integer.toString(p.getId()));
         }
     }
+
+    private void loadRecords() throws SQLException {
+        String sql = "SELECT id, cliente, filial, funcionario, data FROM Venda ORDER BY id;";
+
+        ResultSetTableModel tableModel = new ResultSetTableModel(sql);
+        jTable1.setModel(tableModel);
+
+        jTable1.getSelectionModel().addListSelectionListener((ListSelectionEvent event) -> {
+            try {
+                if (jTable1.getSelectedRow() >= 0) {
+                    Object id = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 0);
+                    Object cliente = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 1);
+                    Object filial = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 2);
+                    Object funcionario = jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 3);
+                    String data = (String) jTable1.getModel().getValueAt(jTable1.getSelectedRow(), 4);
+
+                    txtId.setText(id.toString());
+                    txtData.setText(data.toString());
+                    jcbCliente.setSelectedItem(Integer.parseInt(cliente.toString()));
+                    jcbFilial.setSelectedItem(Integer.parseInt(filial.toString()));
+                    jcbFunc.setSelectedItem(Integer.parseInt(funcionario.toString()));
+
+                }
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+        });
+
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+        jTable1.getColumnModel().getColumn(0).setCellRenderer(rightRenderer);
+    }
+
+    private void clearInputBoxes() {
+        txtId.setText("");
+        txtData.setText("");
+        txtPreco.setText("");
+        txtData.setText("");
+
+    }
+
+    private void addNew() throws SQLException, ParseException {
+        VendaDAO dao = new VendaDAO();
+        model.Venda ven = new model.Venda();
+        ven.setCliente(Integer.parseInt(jcbCliente.getSelectedItem().toString()));
+        ven.setFilial(Integer.parseInt(jcbFilial.getSelectedItem().toString()));
+        ven.setFuncionario(Integer.parseInt(jcbFunc.getSelectedItem().toString()));
+        ven.setData(txtData.getText());
+        dao.insert(ven);
+    }
+
+    private void updateRecord() throws SQLException, ParseException {
+        VendaDAO dao = new VendaDAO();
+        model.Venda ven = new model.Venda();
+        ven.setId(Integer.parseInt(txtId.getText()));
+        ven.setCliente(Integer.parseInt(jcbCliente.getSelectedItem().toString()));
+        ven.setFilial(Integer.parseInt(jcbFilial.getSelectedItem().toString()));
+        ven.setFuncionario(Integer.parseInt(jcbFunc.getSelectedItem().toString()));
+        ven.setData(txtData.getText());
+        dao.update(ven);
+    }
+
+    private void deleteRecord() throws SQLException {
+        VendaDAO dao = new VendaDAO();
+        dao.remove(Integer.parseInt(txtId.getText()));
+    }
+
 }
